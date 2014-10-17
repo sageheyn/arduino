@@ -1,0 +1,141 @@
+#include <Adafruit_NeoPixel.h>
+
+#define PIN 6
+
+// Parameter 1 = number of pixels in strip
+// Parameter 2 = pin number (most are valid)
+// Parameter 3 = pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, PIN, NEO_GRB + NEO_KHZ800);
+
+// they delay time used to calculate a whole second.  The baseline for other calculations
+int seconds = 50;
+
+// red, green and blue values
+int r = 20;
+int g = 20;
+int b = 20;
+
+// check to see if the light should flash to indicate "startup"
+bool firstTimeThrough = true;
+
+void setup() {
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
+  
+}
+
+void loop() {
+
+// if we haven't been through the loop yet, blink the light quickly
+if(firstTimeThrough) {
+    blinkLed(0, seconds/16);
+    delay(seconds);
+}
+
+// if we've already been through the loop then turn it off and wait .5 seconds
+else {
+ turnPixelOff(0);
+ delay(seconds/2); 
+}
+
+
+// blink one pixel at a time
+    for(int i = 0; i < 12; i++)  {
+   // blink the given pixel five times  
+      for(int j = 0; j < 5; j++) {
+         if(j == 4) {
+           // the last time through the loop, leave the given pixel on
+          turnPixelOn(i,r,g,b);
+          delay(seconds);
+         } 
+         else {
+          secondHand(i); 
+         }
+      }
+    
+    }
+
+// turn all pixels off in a backwards sweeping motion from the 11th pixel to 0    
+turnAllPixelsOff(11);
+
+// set the value so the red light won't blink at the start
+firstTimeThrough = false;
+
+}
+
+// sets the color values and times for how each pixel should blink
+void secondHand(int pixelNumber) {
+      strip.setPixelColor(pixelNumber, r, g, b);
+      strip.show();
+      delay(seconds/2);
+      strip.setPixelColor(pixelNumber, 0, 0, 0);
+      strip.show();
+      delay(seconds/2);
+}
+
+// basic pixel on value
+void turnPixelOn(int pixelNumber, int red, int green, int blue) {
+  strip.setPixelColor(pixelNumber, red, green, blue);
+  strip.show();
+}
+
+// basic pixel off value
+void turnPixelOff(int pixelNumber) {
+  strip.setPixelColor(pixelNumber, 0, 0, 0);
+  strip.show();
+}
+
+// cool animation to turn pixels off one a time
+void turnAllPixelsOff(int startingPixel) {
+  if (startingPixel == 0) {
+    for(int t = 0; t < 12; t++) {
+      turnPixelOff(t);
+      delay(seconds/16);
+    }
+  }
+    
+    else {
+      for(int t = 11; t > 0; t--) {
+       turnPixelOff(t);
+       delay(seconds/16); 
+      }
+    }
+    
+  
+}
+
+// cool animation to turn pixels off one a time
+void turnAllPixelsOn(int startingPixel) {
+  if (startingPixel == 0) {
+    for(int t = 0; t < 12; t++) {
+      turnPixelOn(t,r,g,b);
+      delay(seconds/16);
+    }
+  }
+    
+    else {
+      for(int t = 11; t > 0; t--) {
+       turnPixelOn(t,r,g,b);
+       delay(seconds/16); 
+      }
+    }
+    
+  
+}
+
+// this runs the first time through
+void blinkLed(int led, int time) {
+   for(int p = 0; p < 5; p++) {
+    turnPixelOn(led,255,0,0);
+    delay(time);
+    turnPixelOff(led);
+    delay(time);
+  } 
+}
+
+
+
