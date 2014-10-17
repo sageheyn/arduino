@@ -1,6 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 // Richie Hatfield
+//Dane
 
 #define PIN 6
 
