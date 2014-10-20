@@ -2,19 +2,12 @@
 
 #define PIN 6
 
-// Parameter 1 = number of pixels in strip
-// Parameter 2 = pin number (most are valid)
-// Parameter 3 = pixel type flags, add together as needed:
-//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
-//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
-//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
-//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, PIN, NEO_GRB + NEO_KHZ800);
 
-// This is used to calculate how long the loop takes before incrementing/decrementing the brightness
+
 int pulseDuration = 50;
 
-// the maximum value for brightness.  Also effects the "speed" of the pulse because the loops complete faster
+
 int pulseBrightness = 255;
 
 
@@ -27,104 +20,111 @@ uint32_t blueGrey = strip.Color(75, 99, 107);
 
 void setup() {
   strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
+  strip.show(); 
   }
 
 void loop() {
 
-// pulses each NeoPixel starting at 0 up to 11 and then starts over  
+  
 for (int j = 0; j <= 12; j++) {
    pulseRangeOfLeds(0, j, lightBlue, pulseDuration);
   }
 }
 
-// the first function I wrote to figure out how to pulse one NeoPixel at a time
-// I settled on using the setBrightness function to do the pulsing.
-// its got two loops, one for each part: get brighter then get dimmer
+
 void pulseOneLed(int pixelNumber, uint32_t color, int duration) {
   for(int i = 0; i < pulseBrightness; i+=10) {
-    // gets a little brighter each time through the loop
+ 
+ 
     strip.setBrightness(i);
     turnPixelOn(pixelNumber, color);
     delay(duration/2);
   }
   
    for(int i = pulseBrightness; i > 0; i-=10) {
-    // gets a littler dimmer each time through the loop
+   
+   
     strip.setBrightness(i);
     turnPixelOn(pixelNumber, color);
     delay(duration/2);
   }
 }
 
-// my first attempt at a function to return the size of increment based on  how many pixels I am lighting up
-// its a dirty attempt to make the whole pulse take approx the same amount of time regardless of how many pixels I'm pulsing
-// It's not working because I've not really taken all the variables into account: pulseDuration, incrementSize and number of pixels.
-// I think the biggest issue is that each loop takes a bit longer than the previous as we are pulsing more NeoPixels.  It's happening 
-// too fast to see so the animation looks smooth but its not consistent...
 int setIncrementSize(int firstNeoPixel, int lastNeoPixel, int delayDuration) {
   int var = lastNeoPixel - firstNeoPixel;
   switch (var) {
     case 1:
-      //do something when var equals 1
+      
+      
       return 10;
       break;
     case 2:
-      //do something when var equals 2
+      
+      
       return 10;
       break;
     case 3:
-      // do something when var equals 3
+      
+      
       return 5;
       break;
     case 4:
-    // do something when var equals 3
+ 
+ 
     return 5;
     break;
     case 5:
-    // do something when var equals 3
+    
+    
     return 5;
     break;
     default: 
-      // if nothing else matches, do the default
-      // default is optional
+      
+      
       return 1;
   }
 }
 
 
-// see above description.  This plays in (and must be called) after setIncremenentSize above.
+
+
 int setDelayDuration(int incrementSize, int delayDuration) {
   int var = incrementSize;
   switch (var) {
     case 10:
-      //do something when var equals 1
+    
+    
       return delayDuration;
       break;
     case 5:
-      //do something when var equals 2
+   
+   
       return delayDuration/2;
       break;
     default: 
-      // if nothing else matches, do the default
-      // default is optional
+  
+  
       return delayDuration/40;
   }
 }
 
-// this function does the work.  It pulses each pixel, based on how many you want to pulse from 1 to all 12
+
+
 void pulseRangeOfLeds(int firstPixel, int lastPixel, uint32_t color, int duration) {
-  // call based on how many pixels are being lit
+  
+  
   int increment = setIncrementSize(firstPixel, lastPixel, duration);
-  // call based on the incrementSize
+  
+  
   int adjustedTime = setDelayDuration(increment, duration);
   
-  // the is the "fade in" part of the pulse.
+  
+  
   for(int i = 0; i < pulseBrightness; i+=increment) {
     strip.setBrightness(i);
     int pixel = firstPixel;
-    // this keeps lighting up pixels as long as we are within the expected range
-    // won't get called if we are only lighting a single pixel
+   
+   
     while(pixel < lastPixel) {
       turnPixelOn(pixel, color);
       pixel++;
@@ -145,13 +145,15 @@ void pulseRangeOfLeds(int firstPixel, int lastPixel, uint32_t color, int duratio
 }
 
 
-// basic pixel on value
+
+
 void turnPixelOn(int pixelNumber, uint32_t pixelColor) {
   strip.setPixelColor(pixelNumber, pixelColor);
   strip.show();
 }
 
-// basic pixel off value
+
+
 void turnPixelOff(int pixelNumber) {
   strip.setPixelColor(pixelNumber, 0, 0, 0);
   strip.show();
