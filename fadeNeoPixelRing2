@@ -1,164 +1,142 @@
 #include <Adafruit_NeoPixel.h>
-
-#define PIN 6
-
+// makes it reconize the neopixel
+#define PIN 11
+//defines the pin
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, PIN, NEO_GRB + NEO_KHZ800);
-
-
-int pulseDuration = 50;
-
-
-int pulseBrightness = 255;
-
-
+//controls time between lights
+int pulseDuration = 10;// controls pulse of light
+int pulseBrightness = 50; // controls the brightness but ccan also change speed of loop
 // colors I picked from adobe kuler: http://goo.gl/I5x9aP
-uint32_t darkBlue = strip.Color(9, 75, 108);
-uint32_t lightBlue = strip.Color(65, 195, 255); 
-uint32_t greyBlue = strip.Color(16, 129, 193); 
-uint32_t blueGrey = strip.Color(75, 99, 107);
-
-
+uint32_t darkBlue = strip.Color( 1000, 1000, 1000);
+uint32_t lightBlue = strip.Color( 1000, 1000, 1000); 
+uint32_t greyBlue = strip.Color(1000, 1000, 1000); 
+uint32_t blueGrey = strip.Color(1000, 1000, 1000);
+//changes color depending on what the RGB value is
 void setup() {
-  strip.begin();
-  strip.show(); 
-  }
-
+ strip.begin();
+ strip.show(); 
+ }
+//start of a loop
 void loop() {
-
-  
 for (int j = 0; j <= 12; j++) {
-   pulseRangeOfLeds(0, j, lightBlue, pulseDuration);
-  }
+  pulseRangeOfLeds(0, j, lightBlue, pulseDuration);
+ }
 }
-
-
+//makes the loop begin
 void pulseOneLed(int pixelNumber, uint32_t color, int duration) {
-  for(int i = 0; i < pulseBrightness; i+=10) {
- 
- 
-    strip.setBrightness(i);
-    turnPixelOn(pixelNumber, color);
-    delay(duration/2);
-  }
-  
-   for(int i = pulseBrightness; i > 0; i-=10) {
-   
-   
-    strip.setBrightness(i);
-    turnPixelOn(pixelNumber, color);
-    delay(duration/2);
-  }
+ for(int i = 0; i < pulseBrightness; i+=10) {
+//makes it pulse on each led
+   strip.setBrightness(i);
+   turnPixelOn(pixelNumber, color);
+   delay(duration/2);
+ }
+ //turns a specific led on
+  for(int i = pulseBrightness; i > 0; i-=10) {
+  // int i shines brighter
+   strip.setBrightness(i);
+   turnPixelOn(pixelNumber, color);
+   delay(duration/2);
+ }
 }
 
 int setIncrementSize(int firstNeoPixel, int lastNeoPixel, int delayDuration) {
-  int var = lastNeoPixel - firstNeoPixel;
-  switch (var) {
-    case 1:
-      
-      
-      return 10;
-      break;
-    case 2:
-      
-      
-      return 10;
-      break;
-    case 3:
-      
-      
-      return 5;
-      break;
-    case 4:
- 
- 
-    return 5;
-    break;
-    case 5:
-    
-    
-    return 5;
-    break;
-    default: 
-      
-      
-      return 1;
-  }
+ int var = lastNeoPixel - firstNeoPixel;
+ switch (var) {
+   case 1:
+     
+     
+     return 10;
+     break;
+   case 2:
+     
+     
+     return 10;
+     break;
+   case 3:
+     
+     
+     return 10;
+     break;
+   case 4:
+
+
+   return 10;
+   break;
+   case 5:
+   
+   
+   return 10;
+   break;
+   default: 
+     
+     
+     return 10;
+ }
 }
-
-
-
-
+//controls the delay time of all of the lights turning on and off
 int setDelayDuration(int incrementSize, int delayDuration) {
-  int var = incrementSize;
-  switch (var) {
-    case 10:
-    
-    
-      return delayDuration;
-      break;
-    case 5:
+ int var = incrementSize;
+ switch (var) {
+   case 10:
    
    
-      return delayDuration/2;
-      break;
-    default: 
+     return delayDuration;
+     break;
+   case 5:
   
   
-      return delayDuration/40;
-  }
+     return delayDuration/10;
+     break;
+   default: 
+ 
+ 
+     return delayDuration/10;
+ }
 }
-
-
-
+//controls the time in between the loops
 void pulseRangeOfLeds(int firstPixel, int lastPixel, uint32_t color, int duration) {
+ 
+ 
+ int increment = setIncrementSize(firstPixel, lastPixel, duration); // duration of blink
+ 
+ 
+ int adjustedTime = setDelayDuration(increment, duration); 
+ 
+ 
+ 
+ for(int i = 0; i < pulseBrightness; i+=increment) { // how bright the led is on the pulse
+   strip.setBrightness(i);
+   int pixel = firstPixel;
   
   
-  int increment = setIncrementSize(firstPixel, lastPixel, duration);
-  
-  
-  int adjustedTime = setDelayDuration(increment, duration);
-  
-  
-  
-  for(int i = 0; i < pulseBrightness; i+=increment) {
-    strip.setBrightness(i);
-    int pixel = firstPixel;
-   
-   
-    while(pixel < lastPixel) {
-      turnPixelOn(pixel, color);
-      pixel++;
-      }
-    delay(adjustedTime);
-  }
-  
-  for(int i = pulseBrightness; i > 0; i-=increment) {
-    strip.setBrightness(i);
-    int pixel = firstPixel;
-    while(pixel < lastPixel) {
-      turnPixelOn(pixel, color);
-      pixel++;
-      }
-    delay(adjustedTime);
-  }
-  
+   while(pixel < lastPixel) { // sets the color of the pulse
+     turnPixelOn(pixel, color);
+     pixel++;
+     }
+   delay(adjustedTime); // delays for a set time
+ }
+ 
+ for(int i = pulseBrightness; i > 0; i-=increment) { // fades the brightness in for a set time
+   strip.setBrightness(i);
+   int pixel = firstPixel;
+   while(pixel < lastPixel) {
+     turnPixelOn(pixel, color);
+     pixel++;
+     }
+   delay(adjustedTime); // pause after its faded in
+ }
+ 
 }
 
 
 
-
-void turnPixelOn(int pixelNumber, uint32_t pixelColor) {
-  strip.setPixelColor(pixelNumber, pixelColor);
-  strip.show();
+void turnPixelOn(int pixelNumber, uint32_t pixelColor) { // changes the color on the led
+ strip.setPixelColor(pixelNumber, pixelColor);
+ strip.show();
 }
 
 
-
-void turnPixelOff(int pixelNumber) {
-  strip.setPixelColor(pixelNumber, 0, 0, 0);
-  strip.show();
+void turnPixelOff(int pixelNumber) { // turns off the colors on the leds
+ strip.setPixelColor(pixelNumber, 0, 0, 0);
+ strip.show();
 }
-
-
-
-
